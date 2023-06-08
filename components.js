@@ -3,6 +3,12 @@ const layers = ['z-0', 'z-10', 'z-20', 'z-30', 'z-40'];
 const scales = ['scale-105', 'scale-95', 'scale-100', 'scale-105'];
 const corners = ['rounded-ee-none', 'rounded-es-none', 'rounded-se-none', 'rounded-ss-none'];
 
+function Repository(name) {
+  return (
+    `<option value="${name}">${name}</option>`
+  );
+}
+
 function Avatar(name, image, isReviewer, i) {
   const rotation = `${Math.random() > 0.5 ? '-' : ''}${randomArrayItem(rotations)}`;
   const corner = randomArrayItem(corners);

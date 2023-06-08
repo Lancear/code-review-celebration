@@ -6,14 +6,13 @@ const DEFAULT_GIF = 'https://i.pinimg.com/originals/b2/78/a5/b278a5a006340b89464
 const cardsContainer = document.querySelector('#cards');
 const loadingIndicator = document.querySelector('#loading-indicator');
 const footer = document.querySelector('#footer');
-const closeFooter = document.querySelector('#close-footer');
-
-closeFooter.addEventListener('click', () => {
-  footer.classList.add('hidden');
-});
+const closeFooterButton = document.querySelector('#close-footer-button');
+const repositoryList = document.querySelector('#repository-list');
 
 // state
 let newestUpdateTimestamp = null;
+let availableRepos = null;
+let selectedRepo = null;
 
 // const pollIntervalId = setInterval(() => onPoll(), POLL_INTERVAL);
 async function onPoll() {
@@ -39,6 +38,20 @@ async function onPageLoad() {
   const res = await fetch('/api/check');
   if (!res.ok) location.pathname = '/auth/login';
 
+  closeFooterButton.addEventListener('click', () => {
+    footer.classList.add('hidden');
+  });
+
+  availableRepos = await loadGithubRepositories();
+  for (const repo of availableRepos) {
+    appendComponent(repositoryList, Repository(repo))
+  }
+
+  document.github.repository.addEventListener('focusout', () => {
+    if (availableRepos?.includes(document.github.repository.value)) {
+      selectedRepo = document.github.repository.value;
+    }
+  });
 
   await paginated({ timeout: PAGE_INTERVAL }, async (page) => {
     const pullRequests = await loadGithubPullRequests(GITHUB_REPOSITORY, page);

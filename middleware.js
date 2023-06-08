@@ -3,7 +3,7 @@ export const config = {
 };
 
 const STATE_LENGTH = 3;
-const GITHUB_PAGE_SIZE = 32;
+const GITHUB_PAGE_SIZE = 24;
 
 /**
  * 
@@ -58,7 +58,7 @@ export default async function middleware(request, context) {
         },
       }).then(res => res.json());
 
-      const res = await fetch(`${repos_url}?per_page=100&page=1`, {
+      const res = await fetch(`${repos_url}?sort=updated&per_page=100&page=1`, {
         headers: {
           'authorization': `Bearer ${token}`,
         },
