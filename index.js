@@ -36,6 +36,10 @@ async function onPoll() {
 
 onPageLoad();
 async function onPageLoad() {
+  const res = await fetch('/auth/check');
+  if (!res.ok) location.pathname = '/auth/login';
+
+
   await paginated({ timeout: PAGE_INTERVAL }, async (page) => {
     const pullRequests = await loadGithubPullRequests(GITHUB_REPOSITORY, page);
     const mergedPullRequests = await getMergedPullRequestsWithReviews(pullRequests);
