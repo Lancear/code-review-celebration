@@ -50,20 +50,20 @@ export default async function middleware(request, context) {
 
       const { repos_url } = await fetch('https://api.github.com/user', {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          'authorization': `Bearer ${token}`,
         },
       }).then(res => res.json());
 
-      const res = await fetch(`${repos_url}?per_page=100&page=1`, {
+      const repos = await fetch(`${repos_url}?per_page=100&page=1`, {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          'authorization': `Bearer ${token}`,
         },
-      });
+      }).then(res => res.json());
 
-      return new Response(await res.arrayBuffer(), {
+      return new Response(repos.map(repo => repo.full_name), {
         status: res.status,
         statusText: res.statusText,
-        headers: res.headers,
+        headers: { 'content-type': 'application/json' },
       });
     }
     else if (url.pathname === '/api/pulls') {
@@ -73,14 +73,14 @@ export default async function middleware(request, context) {
 
       const res = await fetch(`https://api.github.com/repos/${repo}/pulls?state=closed&sort=updated&direction=desc&per_page=${GITHUB_PAGE_SIZE}&page=${page}`, {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          'authorization': `Bearer ${token}`,
         },
       });
 
       return new Response(await res.arrayBuffer(), {
         status: res.status,
         statusText: res.statusText,
-        headers: res.headers,
+        headers: { 'content-type': 'application/json' },
       });
     }
     else if (url.pathname === '/api/reviews') {
@@ -91,14 +91,14 @@ export default async function middleware(request, context) {
 
       const res = await fetch(`https://api.github.com/repos/${repo}/pulls/${pr}/reviews?sort=created&direction=desc&per_page=${GITHUB_PAGE_SIZE}&page=${page}`, {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          'authorization': `Bearer ${token}`,
         },
       });
 
       return new Response(await res.arrayBuffer(), {
         status: res.status,
         statusText: res.statusText,
-        headers: res.headers,
+        headers: { 'content-type': 'application/json' },
       });
     }
   }
