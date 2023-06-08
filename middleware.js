@@ -11,6 +11,7 @@ const STATE_LENGTH = 3;
  */
 export default async function middleware(request, context) {
   const url = new URL(request.url);
+  console.log("middleware");
 
   try {
     if (url.pathname === "/auth/login") {
