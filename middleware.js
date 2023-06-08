@@ -14,11 +14,7 @@ export default async function middleware(request, context) {
   const url = new URL(request.url);
 
   try {
-    if (url.pathname === '/auth/check') {
-      const token = Boolean(/token=([^,;\s]+)/.exec(request.headers.get('cookie') ?? "")?.[1]);
-      return token ? new Response('Ok', { status: 200 }) : new Response('Unauthorized', { status: 401 });
-    }
-    else if (url.pathname === '/auth/login') {
+    if (url.pathname === '/auth/login') {
       const randomNumbers = new Uint8Array({ length: STATE_LENGTH });
       crypto.getRandomValues(randomNumbers);
 
@@ -49,8 +45,12 @@ export default async function middleware(request, context) {
       headers.set('Set-Cookie', 'token=' + tokenInfo.access_token + '; SameSite=Strict; Path=/api; Secure; HttpOnly');
       return new Response(null, { headers, status: 302 });
     }
+    else if (url.pathname === '/api/check') {
+      const token = Boolean(/token=([^,;\s]+)/.exec(request.headers.get('cookie') ?? '')?.[1]);
+      return token ? new Response('Ok', { status: 200 }) : new Response('Unauthorized', { status: 401 });
+    }
     else if (url.pathname === '/api/repos') {
-      const token = /token=([^,;\s]+)/.exec(request.headers.get('cookie'))[1];
+      const token = /token=([^,;\s]+)/.exec(request.headers.get('cookie') ?? '')?.[1];
 
       const { repos_url } = await fetch('https://api.github.com/user', {
         headers: {
@@ -75,7 +75,7 @@ export default async function middleware(request, context) {
       });
     }
     else if (url.pathname === '/api/pulls') {
-      const token = /token=([^,;\s]+)/.exec(request.headers.get('cookie'))[1];
+      const token = /token=([^,;\s]+)/.exec(request.headers.get('cookie') ?? '')?.[1];
       const repo = url.searchParams.get('repo');
       const page = url.searchParams.get('page');
 
@@ -92,7 +92,7 @@ export default async function middleware(request, context) {
       });
     }
     else if (url.pathname === '/api/reviews') {
-      const token = /token=([^,;\s]+)/.exec(request.headers.get('cookie'))[1];
+      const token = /token=([^,;\s]+)/.exec(request.headers.get('cookie') ?? '')?.[1];
       const repo = url.searchParams.get('repo');
       const pr = url.searchParams.get('pr');
       const page = url.searchParams.get('page');

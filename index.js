@@ -36,8 +36,8 @@ async function onPoll() {
 
 onPageLoad();
 async function onPageLoad() {
-  const res = await fetch('/auth/check');
-  if (!res.ok) console.log('/auth/login');
+  const res = await fetch('/api/check');
+  if (!res.ok) location.pathname = '/auth/login';
 
 
   await paginated({ timeout: PAGE_INTERVAL }, async (page) => {
