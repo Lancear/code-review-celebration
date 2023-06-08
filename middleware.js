@@ -16,7 +16,7 @@ export default async function middleware(request, context) {
   try {
     if (url.pathname === '/auth/check') {
       const token = Boolean(/token=([^,;\s]+)/.exec(request.headers.get('cookie') ?? "")?.[1]);
-      return token ? new Response(null, { status: 200 }) : new Response('Unauthorized', { status: 401 });
+      return token ? new Response('Ok', { status: 200 }) : new Response('Unauthorized', { status: 401 });
     }
     else if (url.pathname === '/auth/login') {
       const randomNumbers = new Uint8Array({ length: STATE_LENGTH });
