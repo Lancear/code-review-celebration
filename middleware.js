@@ -1,5 +1,5 @@
 export const config = {
-  matcher: ['/auth/:path*', '/api/:path*', '/assets/:path*'],
+  matcher: ['/auth/:path*', '/api/:path*'],
 };
 
 const STATE_LENGTH = 3;
@@ -45,6 +45,27 @@ export default async function middleware(request, context) {
       headers.set('Set-Cookie', 'token=' + tokenInfo.access_token + '; SameSite=Strict; Path=/api; Secure; HttpOnly');
       return new Response(null, { headers, status: 302 });
     }
+    else if (url.pathname === '/api/repos') {
+      const token = /token=([^,;\s]+)/.exec(request.headers.get('cookie'))[1];
+
+      const { repos_url } = await fetch('https://api.github.com/user', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      }).then(res => res.json());
+
+      const res = await fetch(`${repos_url}?per_page=100&page=1`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      return new Response(await res.arrayBuffer(), {
+        status: res.status,
+        statusText: res.statusText,
+        headers: res.headers,
+      });
+    }
     else if (url.pathname === '/api/pulls') {
       const token = /token=([^,;\s]+)/.exec(request.headers.get('cookie'))[1];
       const repo = url.searchParams.get('repo');
@@ -69,22 +90,6 @@ export default async function middleware(request, context) {
       const page = url.searchParams.get('page');
 
       const res = await fetch(`https://api.github.com/repos/${repo}/pulls/${pr}/reviews?sort=created&direction=desc&per_page=${GITHUB_PAGE_SIZE}&page=${page}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      return new Response(await res.arrayBuffer(), {
-        status: res.status,
-        statusText: res.statusText,
-        headers: res.headers,
-      });
-    }
-    else if (url.pathname.startsWith('/api/assets')) {
-      const token = /token=([^,;\s]+)/.exec(request.headers.get('cookie'))[1];
-      const repo = url.searchParams.get('repo');
-
-      const res = await fetch(`https://github.com/${repo}${url.pathname.substring("/api".length)}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },

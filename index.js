@@ -61,11 +61,7 @@ function updateLoadingState(newlyMergedPullRequests) {
 
 function createPullRequestCard(reviews, pullRequest) {
   const lastCelebrationGifReview = findLastCelebrationGifReview(reviews);
-  let celebrationGif = extractCelebrationGifUrl(lastCelebrationGifReview);
-
-  if (celebrationGif?.startsWith(`https://github.com/${GITHUB_REPOSITORY}`)) {
-    celebrationGif = celebrationGif.replace(`https://github.com/${GITHUB_REPOSITORY}`, "/api") + "?repo=" + GITHUB_REPOSITORY;
-  }
+  const celebrationGif = extractCelebrationGifUrl(lastCelebrationGifReview);
 
   const card = Card(
     pullRequest.title,
