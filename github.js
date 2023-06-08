@@ -3,7 +3,7 @@ const GITHUB_REPOSITORY = 'shopstory-ai/pulse';
 const GITHUB_PAGE_SIZE = 100;
 
 function loadGithubPullRequests(repo, token, page) {
-  return fetch(`https://api.github.com/repos/${repo}/pulls?state=closed&sort=updated&direction=desc&per_page=${GITHUB_PAGE_SIZE}&page=${page}`, {
+  return fetch(`/api/repos/${repo}/pulls?state=closed&sort=updated&direction=desc&per_page=${GITHUB_PAGE_SIZE}&page=${page}`, {
     headers: {
       Authorization: `Bearer ${token}`
     }
