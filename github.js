@@ -8,6 +8,6 @@ function loadGithubPullRequests(repo, token, page) {
 }
 
 function loadGithubPullRequestReviews(repo, token, pullRequest) {
-  return fetch(`/api/reviews?repo=${repo}&pr=${pullRequest}&page=${page}`)
+  return fetch(`/api/reviews?repo=${repo}&pr=${pullRequest}`)
     .then(res => res.json());
 }
