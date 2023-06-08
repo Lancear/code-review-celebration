@@ -10,28 +10,28 @@ const closeFooterButton = document.querySelector('#close-footer-button');
 const repositoryList = document.querySelector('#repository-list');
 
 // state
-let newestUpdateTimestamp = null;
-let availableRepos = null;
-let selectedRepo = null;
+// let newestUpdateTimestamp = null;
+let availableRepositories = null;
+let selectedRepository = new URLSearchParams(window.location.search).get("repository");
 
 // const pollIntervalId = setInterval(() => onPoll(), POLL_INTERVAL);
-async function onPoll() {
-  const firstChildBeforePoll = cardsContainer.firstElementChild;
+// async function onPoll() {
+//   const firstChildBeforePoll = cardsContainer.firstElementChild;
 
-  await paginated({ timeout: PAGE_INTERVAL }, async (page) => {
-    const pullRequests = await loadGithubPullRequests(GITHUB_REPOSITORY, page);
-    const newPullRequests = pullRequests.filter(pullRequest => new Date(pullRequest.updated_at) > newestUpdateTimestamp);
-    const newlyMergedPullRequests = await getMergedPullRequestsWithReviews(newPullRequests);
-    updateLoadingState(newlyMergedPullRequests);
+//   await paginated({ timeout: PAGE_INTERVAL }, async (page) => {
+//     const pullRequests = await loadGithubPullRequests(GITHUB_REPOSITORY, page);
+//     const newPullRequests = pullRequests.filter(pullRequest => new Date(pullRequest.updated_at) > newestUpdateTimestamp);
+//     const newlyMergedPullRequests = await getMergedPullRequestsWithReviews(newPullRequests);
+//     updateLoadingState(newlyMergedPullRequests);
 
-    for (const { pullRequest, reviews } of newlyMergedPullRequests) {
-      const card = createPullRequestCard(reviews, pullRequest);
-      insertComponentBefore(cardsContainer, firstChildBeforePoll, card);
-    }
+//     for (const { pullRequest, reviews } of newlyMergedPullRequests) {
+//       const card = createPullRequestCard(reviews, pullRequest);
+//       insertComponentBefore(cardsContainer, firstChildBeforePoll, card);
+//     }
 
-    return newPullRequests.length === GITHUB_PAGE_SIZE;
-  });
-}
+//     return newPullRequests.length === GITHUB_PAGE_SIZE;
+//   });
+// }
 
 onPageLoad();
 async function onPageLoad() {
@@ -42,43 +42,51 @@ async function onPageLoad() {
     footer.classList.add('hidden');
   });
 
-  availableRepos = await loadGithubRepositories();
-  for (const repo of availableRepos) {
+  document.github.addEventListener('submit', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  });
+
+  availableRepositories = await loadGithubRepositories();
+  for (const repo of availableRepositories) {
     appendComponent(repositoryList, Repository(repo))
   }
 
-  document.github.repository.addEventListener('focusout', () => {
-    if (availableRepos?.includes(document.github.repository.value)) {
-      selectedRepo = document.github.repository.value;
+  document.github.repository.addEventListener('focusout', async () => {
+    if (
+      availableRepositories?.includes(document.github.repository.value &&
+        selectedRepository !== document.github.repository.value
+    )) {
+      selectedRepository = document.github.repository.value;
+      loadingIndicator.classList.remove('hidden');
+      cardsContainer.innerHTML = '';
+      await showPullRequests();
     }
   });
 
-  await paginated({ timeout: PAGE_INTERVAL }, async (page) => {
-    const pullRequests = await loadGithubPullRequests(GITHUB_REPOSITORY, page);
-    const mergedPullRequests = await getMergedPullRequestsWithReviews(pullRequests);
-    updateLoadingState(mergedPullRequests);
-
-    for (const { pullRequest, reviews } of mergedPullRequests) {
-      const card = createPullRequestCard(reviews, pullRequest);
-      appendComponent(cardsContainer, card);
-    }
-
-    return pullRequests.length === GITHUB_PAGE_SIZE;
-  });
+  if (selectedRepository) await showPullRequests();
 }
 
+async function showPullRequests() {
+  const pullRequests = await loadGithubPullRequests(selectedRepository, page);
+  const mergedPullRequests = await getMergedPullRequestsWithReviews(pullRequests);
+  updateLoadingState(mergedPullRequests);
 
+  for (const { pullRequest, reviews } of mergedPullRequests) {
+    const card = createPullRequestCard(reviews, pullRequest);
+    appendComponent(cardsContainer, card);
+  }
+}
 
 function updateLoadingState(newlyMergedPullRequests) {
   if (newlyMergedPullRequests.length > 0) {
     if (!loadingIndicator.classList.contains('hidden')) {
       loadingIndicator.classList.add('hidden');
     }
-
-    const newestUpdateOfPageTimestamp = new Date(newlyMergedPullRequests[0].pullRequest.updated_at);
-    if (newestUpdateOfPageTimestamp > newestUpdateTimestamp) {
-      newestUpdateTimestamp = newestUpdateOfPageTimestamp;
-    }
+    // const newestUpdateOfPageTimestamp = new Date(newlyMergedPullRequests[0].pullRequest.updated_at);
+    // if (newestUpdateOfPageTimestamp > newestUpdateTimestamp) {
+    //   newestUpdateTimestamp = newestUpdateOfPageTimestamp;
+    // }
   }
 }
 

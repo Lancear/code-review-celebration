@@ -1,6 +1,4 @@
-const GITHUB_TOKEN = 'tok tok';
-const GITHUB_REPOSITORY = 'shopstory-ai/pulse';
-const GITHUB_PAGE_SIZE = 100;
+const GITHUB_PAGE_SIZE = 24;
 
 function loadGithubRepositories() {
   return fetch('/api/repos')

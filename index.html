@@ -17,25 +17,25 @@
 </head>
 <body>
   <main class="min-h-screen w-full bg-slate-400">
-    <header class="w-full flex flex-col items-center pt-16 pb-8">
-      <h1>Celebration gifs 🎉</h1>
-      <p>Because code review approvals deserve to be celebrated with gifs!</p>
-      <form name="github" class="pt-4">
-        <input name="repository" list="repository-list" placeholder="your/repository" class="p-2 rounded">
+    <header class="w-full flex flex-col items-center pt-16 pb-12">
+      <h1 class="font-bold text-4xl">Celebration gifs 🎉</h1>
+      <p class="text-xl mt-4">Because code review approvals deserve to be celebrated with gifs!</p>
+      <form name="github" autocomplete="off">
+        <input name="repository" list="repository-list" placeholder="your/repository" class="mt-6 px-3 py-2 w-72 rounded text-center bg-slate-200 placeholder:text-slate-400">
         <datalist id="repository-list"></datalist>
       </form>
     </header>
     <section id="cards" class="w-full flex items-center flex-wrap p-10 justify-center gap-2">
       <div id="loading-indicator" class="p-4 bg-slate-200 rounded shadow-2xl border border-slate-300">
         <figure class="w-96 rounded-sm bg-slate-800"><img class="h-full w-full" src="https://thumbs.gfycat.com/BrightConcernedHapuku-size_restricted.gif"/></figure>
-        <figcaption class="w-96 pt-2 break-words text-slate-600 font-handwriting leading-none text-xl">WALL-E is loading your pull requests :D</figcaption>
+        <figcaption class="w-96 pt-2 break-words text-slate-600 font-handwriting leading-none text-xl">Select a repository and WALL-E will load your pull requests :D</figcaption>
       </div>
     </section>
   </main>
   <footer id="footer" class="fixed bottom-0 left-0 bg-green-300 p-2 flex justify-center z-50 w-full">
     <span class="text-center">
       ❤ This website was made with love during a hackathon at
-      <img class="h-6" src="./shopstory.svg" alt="Shopstory Devs" />
+      <a href="https://en.shopstory.ai/about-us" target="_blank"><img class="h-4 mx-px inline" src="./shopstory.svg" alt="Shopstory" /></a>
       and gave you a cookie for working properly 🍪
     </span>
     <svg id="close-footer-button" class="absolute right-4 bottom-2 text-green-600 h-6 ml-16 cursor-pointer" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
