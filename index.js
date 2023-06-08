@@ -61,7 +61,7 @@ async function onPageLoad() {
       window.history.replaceState(
         null, 
         document.title, 
-        document.location.href.split('?')[0] + '?repository=' + selectedRepository
+        document.location.href.split('?')[0] + '?repository=' + encodeURIComponent(selectedRepository)
       );
 
       cardsContainer.innerHTML = `
@@ -78,9 +78,10 @@ async function onPageLoad() {
 }
 
 async function showPullRequests() {
-  const pullRequests = await loadGithubPullRequests(selectedRepository, page);
+  const pullRequests = await loadGithubPullRequests(selectedRepository, 1);
 
   if (pullRequests.length === 0) {
+    updateLoadingState();
     appendComponent(cardsContainer, `<p>It seems like ${selectedRepository} does not have any pull requests yet 👀`);
     return;
   }
@@ -92,18 +93,18 @@ async function showPullRequests() {
     const card = createPullRequestCard(reviews, pullRequest);
     appendComponent(cardsContainer, card);
   }
+
+  updateLoadingState();
 }
 
-function updateLoadingState(newlyMergedPullRequests) {
-  if (newlyMergedPullRequests.length > 0) {
-    if (!loadingIndicator.classList.contains('hidden')) {
-      loadingIndicator.classList.add('hidden');
-    }
-    // const newestUpdateOfPageTimestamp = new Date(newlyMergedPullRequests[0].pullRequest.updated_at);
-    // if (newestUpdateOfPageTimestamp > newestUpdateTimestamp) {
-    //   newestUpdateTimestamp = newestUpdateOfPageTimestamp;
-    // }
+function updateLoadingState() {
+  if (!loadingIndicator.classList.contains('hidden')) {
+    loadingIndicator.classList.add('hidden');
   }
+  // const newestUpdateOfPageTimestamp = new Date(newlyMergedPullRequests[0].pullRequest.updated_at);
+  // if (newestUpdateOfPageTimestamp > newestUpdateTimestamp) {
+  //   newestUpdateTimestamp = newestUpdateOfPageTimestamp;
+  // }
 }
 
 function createPullRequestCard(reviews, pullRequest) {
