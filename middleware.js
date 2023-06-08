@@ -11,7 +11,6 @@ const STATE_LENGTH = 3;
  */
 export default async function middleware(request, context) {
   const url = new URL(request.url);
-  console.log("middleware");
 
   try {
     if (url.pathname === "/auth/login") {
@@ -34,6 +33,7 @@ export default async function middleware(request, context) {
       const validState = stateNumbers.length === STATE_LENGTH && await crypto.subtle.verify("hmac", await getSignKey(), stateSignature, stateNumbers);
       if (!validState) return new Response("Unauthorized", { status: 401 });
   
+      console.log("valid state");
       const { SCOPE } = process.env;
       const tokenInfo = await fetchAccessToken(url.searchParams.get('code'));
       if (tokenInfo.scope === SCOPE) return new Response("Unauthorized", { status: 401 });
@@ -67,5 +67,7 @@ async function fetchAccessToken(code) {
     { method: 'POST', headers: { 'Accept': 'application/json' }}
   );
 
+  console.log(res.status);
+  console.log(await res.text());
   return res.json();
 }
