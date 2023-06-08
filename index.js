@@ -4,7 +4,7 @@ const PAGE_INTERVAL = 10 * 1000;
 const DEFAULT_GIF = 'https://i.pinimg.com/originals/b2/78/a5/b278a5a006340b8946457552adec56c5.gif';
 
 const cardsContainer = document.querySelector('#cards');
-const loadingIndicator = document.querySelector('#loading-indicator');
+let loadingIndicator = document.querySelector('#loading-indicator');
 const footer = document.querySelector('#footer');
 const closeFooterButton = document.querySelector('#close-footer-button');
 const repositoryList = document.querySelector('#repository-list');
@@ -79,6 +79,8 @@ async function onPageLoad() {
           <figcaption class="w-96 pt-2 break-words text-slate-600 font-handwriting leading-none text-xl">Select a repository and WALL-E will load your pull requests :D</figcaption>
         </div>
       `;
+
+      loadingIndicator = document.querySelector('#loading-indicator');
       await showPullRequests();
     }
   });
@@ -91,7 +93,12 @@ async function showPullRequests() {
 
   if (pullRequests.length === 0) {
     updateLoadingState();
-    appendComponent(cardsContainer, `<p>It seems like ${selectedRepository} does not have any pull requests yet 👀`);
+    appendComponent(
+      cardsContainer, 
+      `<div class="p-4 bg-slate-200 rounded shadow-2xl border border-slate-300">
+        <p>It seems like ${selectedRepository} does not have any pull requests yet 👀</p>
+      </div>`
+    );
     return;
   }
 
