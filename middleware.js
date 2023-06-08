@@ -36,8 +36,10 @@ export default async function middleware(request, context) {
       console.log("valid state");
       const { SCOPE } = process.env;
       const tokenInfo = await fetchAccessToken(url.searchParams.get('code'));
+      console.log(tokenInfo);
       if (tokenInfo.scope === SCOPE) return new Response("Unauthorized", { status: 401 });
 
+      console.log("set cookie");
       const headers = new Headers();
       url.pathname = '/';
       url.search = '';
@@ -67,7 +69,5 @@ async function fetchAccessToken(code) {
     { method: 'POST', headers: { 'Accept': 'application/json' }}
   );
 
-  console.log(res.status);
-  console.log(await res.text());
   return res.json();
 }
