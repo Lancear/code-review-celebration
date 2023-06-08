@@ -46,7 +46,7 @@ export default async function middleware(request, context) {
       return new Response(null, { headers, status: 302 });
     }
     else if (url.pathname.startsWith("/api")) {
-      console.log([...request.headers.entries()].join("\r\n"));
+      console.log(request.headers.get('cookie'));
     }
   }
   catch (err) {
