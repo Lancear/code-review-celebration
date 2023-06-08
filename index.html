@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="./helpers.js" defer></script>
+  <script src="./github.js" defer></script>
+  <script src="./components.js" defer></script>
+  <script src="./index.js" defer></script>
+  <link rel="stylesheet" href="./index.css" />
+
+  <link rel="icon" href="./fav_icon.png" />
+  <title>Shopstory Developer Gifs</title>
+</head>
+<body>
+  <main class="min-h-screen w-full bg-slate-400">
+    <header class="w-full flex flex-col items-center pt-16 pb-8">
+      <img class="h-16" src="./shopstory.svg" alt="Shopstory Devs" />
+      <h1 id="celebration-gif-count" class="pt-2 text-lg font-base"></h1>
+    </header>
+    <section id="cards" class="w-full flex items-center flex-wrap p-10 justify-center gap-2">
+      <div id="loading-indicator" class="p-4 bg-slate-200 rounded shadow-2xl border border-slate-300">
+        <figure class="w-96 rounded-sm bg-slate-800"><img class="h-full w-full" src="https://thumbs.gfycat.com/BrightConcernedHapuku-size_restricted.gif"/></figure>
+        <figcaption class="w-96 pt-2 break-words text-slate-600 font-handwriting leading-none text-xl">WALL-E is loading your pull requests :D</figcaption>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
