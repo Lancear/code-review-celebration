@@ -54,9 +54,9 @@ async function onPageLoad() {
 
   document.github.repository.addEventListener('focusout', async () => {
     if (
-      availableRepositories?.includes(document.github.repository.value &&
+      availableRepositories?.includes(document.github.repository.value) &&
         selectedRepository !== document.github.repository.value
-    )) {
+    ) {
       selectedRepository = document.github.repository.value;
       loadingIndicator.classList.remove('hidden');
       cardsContainer.innerHTML = '';
