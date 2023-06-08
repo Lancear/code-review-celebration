@@ -76,7 +76,7 @@ async function onPageLoad() {
       cardsContainer.innerHTML = `
         <div id="loading-indicator" class="p-4 bg-slate-200 rounded shadow-2xl border border-slate-300">
           <figure class="w-96 rounded-sm bg-slate-800"><img class="h-full w-full" src="https://thumbs.gfycat.com/BrightConcernedHapuku-size_restricted.gif"/></figure>
-          <figcaption class="w-96 pt-2 break-words text-slate-600 leading-none text-xl">Select a repository and WALL-E will load your pull requests :D</figcaption>
+          <figcaption class="w-96 pt-2 break-words text-slate-600 leading-tight text-lg">Select a repository and WALL-E will load your pull requests :D</figcaption>
         </div>
       `;
 
@@ -97,7 +97,7 @@ async function showPullRequests() {
       cardsContainer, 
       `<div class="p-4 bg-slate-200 rounded shadow-2xl border border-slate-300">
         <figure class="w-96 rounded-sm bg-slate-800"><img class="h-full w-full" src="https://media3.giphy.com/media/ncU3bkZ5ghDlS/giphy.gif"/></figure>
-        <figcaption class="w-96 pt-2 break-words text-slate-600 leading-none text-xl">It seems like ${selectedRepository} does not have any pull requests yet 👀</figcaption>
+        <figcaption class="w-96 pt-2 break-words text-slate-600 leading-tight text-lg">It seems like ${selectedRepository} does not have any pull requests yet 👀</figcaption>
       </div>`
     );
     return;
