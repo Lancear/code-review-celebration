@@ -96,7 +96,8 @@ async function showPullRequests() {
     appendComponent(
       cardsContainer, 
       `<div class="p-4 bg-slate-200 rounded shadow-2xl border border-slate-300">
-        <p>It seems like ${selectedRepository} does not have any pull requests yet 👀</p>
+        <figure class="w-96 rounded-sm bg-slate-800"><img class="h-full w-full" src="https://media3.giphy.com/media/ncU3bkZ5ghDlS/giphy.gif"/></figure>
+        <figcaption class="w-96 pt-2 break-words text-slate-600 font-handwriting leading-none text-xl">It seems like ${selectedRepository} does not have any pull requests yet 👀</figcaption>
       </div>`
     );
     return;
