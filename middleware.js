@@ -60,7 +60,9 @@ export default async function middleware(request, context) {
         },
       });
 
-      const repoNames = res.ok ? (await res.json().map(repo => repo.full_name)) :  (await "");
+      const repoNames = res.ok 
+        ? (await res.json()).map(repo => repo.full_name) 
+        :  (await "");
 
       return new Response(repoNames, {
         status: res.status,
