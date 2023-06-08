@@ -84,7 +84,7 @@ export default async function middleware(request, context) {
       const token = /token=([^,;\s]+)/.exec(request.headers.get('cookie'))[1];
       const repo = url.searchParams.get('repo');
 
-      const res = await fetch(`https://github.com/${repo}${url.pathname}`, {
+      const res = await fetch(`https://github.com/${repo}${url.pathname.substring("/api".length)}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
