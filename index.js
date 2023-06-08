@@ -64,7 +64,7 @@ function createPullRequestCard(reviews, pullRequest) {
   let celebrationGif = extractCelebrationGifUrl(lastCelebrationGifReview);
 
   if (celebrationGif?.startsWith(`https://github.com/${GITHUB_REPOSITORY}`)) {
-    celebrationGif = celebrationGif.replace(`https://github.com/${GITHUB_REPOSITORY}`, "") + "?repo=" + GITHUB_REPOSITORY;
+    celebrationGif = celebrationGif.replace(`https://github.com/${GITHUB_REPOSITORY}`, "/api") + "?repo=" + GITHUB_REPOSITORY;
   }
 
   const card = Card(

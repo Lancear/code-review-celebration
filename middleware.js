@@ -80,7 +80,7 @@ export default async function middleware(request, context) {
         headers: res.headers,
       });
     }
-    else if (url.pathname.startsWith('/assets')) {
+    else if (url.pathname.startsWith('/api/assets')) {
       const token = /token=([^,;\s]+)/.exec(request.headers.get('cookie'))[1];
       const repo = url.searchParams.get('repo');
 
