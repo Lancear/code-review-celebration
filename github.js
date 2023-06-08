@@ -2,12 +2,12 @@ const GITHUB_TOKEN = 'tok tok';
 const GITHUB_REPOSITORY = 'shopstory-ai/pulse';
 const GITHUB_PAGE_SIZE = 100;
 
-function loadGithubPullRequests(repo, token, page) {
+function loadGithubPullRequests(repo, page) {
   return fetch(`/api/pulls?repo=${repo}&page=${page}`)
     .then(res => res.json());
 }
 
-function loadGithubPullRequestReviews(repo, token, pullRequest) {
+function loadGithubPullRequestReviews(repo, pullRequest) {
   return fetch(`/api/reviews?repo=${repo}&pr=${pullRequest}`)
     .then(res => res.json());
 }
