@@ -5,6 +5,12 @@ const DEFAULT_GIF = 'https://i.pinimg.com/originals/b2/78/a5/b278a5a006340b89464
 
 const cardsContainer = document.querySelector('#cards');
 const loadingIndicator = document.querySelector('#loading-indicator');
+const footer = document.querySelector('#footer');
+const closeFooter = document.querySelector('#close-footer');
+
+closeFooter.addEventListener('click', () => {
+  footer.classList.add('hidden');
+});
 
 // state
 let newestUpdateTimestamp = null;
