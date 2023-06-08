@@ -54,13 +54,15 @@ export default async function middleware(request, context) {
         },
       }).then(res => res.json());
 
-      const repos = await fetch(`${repos_url}?per_page=100&page=1`, {
+      const res = await fetch(`${repos_url}?per_page=100&page=1`, {
         headers: {
           'authorization': `Bearer ${token}`,
         },
-      }).then(res => res.json());
+      });
 
-      return new Response(repos.map(repo => repo.full_name), {
+      const repoNames = res.ok ? (await res.json().map(repo => repo.full_name)) :  (await "");
+
+      return new Response(repoNames, {
         status: res.status,
         statusText: res.statusText,
         headers: { 'content-type': 'application/json' },
