@@ -58,8 +58,18 @@ async function onPageLoad() {
         selectedRepository !== document.github.repository.value
     ) {
       selectedRepository = document.github.repository.value;
-      loadingIndicator.classList.remove('hidden');
-      cardsContainer.innerHTML = '';
+      window.history.replaceState(
+        null, 
+        document.title, 
+        document.location.href.split('?')[0] + '?repository=' + selectedRepository
+      );
+
+      cardsContainer.innerHTML = `
+        <div id="loading-indicator" class="p-4 bg-slate-200 rounded shadow-2xl border border-slate-300">
+          <figure class="w-96 rounded-sm bg-slate-800"><img class="h-full w-full" src="https://thumbs.gfycat.com/BrightConcernedHapuku-size_restricted.gif"/></figure>
+          <figcaption class="w-96 pt-2 break-words text-slate-600 font-handwriting leading-none text-xl">Select a repository and WALL-E will load your pull requests :D</figcaption>
+        </div>
+      `;
       await showPullRequests();
     }
   });
@@ -69,6 +79,12 @@ async function onPageLoad() {
 
 async function showPullRequests() {
   const pullRequests = await loadGithubPullRequests(selectedRepository, page);
+
+  if (pullRequests.length === 0) {
+    appendComponent(cardsContainer, `<p>It seems like ${selectedRepository} does not have any pull requests yet 👀`);
+    return;
+  }
+
   const mergedPullRequests = await getMergedPullRequestsWithReviews(pullRequests);
   updateLoadingState(mergedPullRequests);
 
