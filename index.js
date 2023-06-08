@@ -19,7 +19,7 @@ let selectedRepository = new URLSearchParams(window.location.search).get("reposi
 //   const firstChildBeforePoll = cardsContainer.firstElementChild;
 
 //   await paginated({ timeout: PAGE_INTERVAL }, async (page) => {
-//     const pullRequests = await loadGithubPullRequests(GITHUB_REPOSITORY, page);
+//     const pullRequests = await loadGithubPullRequests(selectedRepository, page);
 //     const newPullRequests = pullRequests.filter(pullRequest => new Date(pullRequest.updated_at) > newestUpdateTimestamp);
 //     const newlyMergedPullRequests = await getMergedPullRequestsWithReviews(newPullRequests);
 //     updateLoadingState(newlyMergedPullRequests);
@@ -35,9 +35,6 @@ let selectedRepository = new URLSearchParams(window.location.search).get("reposi
 
 onPageLoad();
 async function onPageLoad() {
-  const res = await fetch('/api/check');
-  if (!res.ok) location.pathname = '/auth/login';
-
   closeFooterButton.addEventListener('click', () => {
     footer.classList.add('hidden');
   });
@@ -46,6 +43,18 @@ async function onPageLoad() {
     e.preventDefault();
     e.stopPropagation();
   });
+
+  if (selectedRepository) {
+    if  (!document.github.repository.value) {
+      document.github.repository.value = selectedRepository;
+    }
+    else {
+      selectedRepository = null;
+    }
+  }
+
+  const res = await fetch('/api/check');
+  if (!res.ok) location.pathname = '/auth/login';
 
   availableRepositories = await loadGithubRepositories();
   for (const repo of availableRepositories) {
@@ -128,7 +137,7 @@ async function getMergedPullRequestsWithReviews(newPullRequests) {
     .sort((a, b) => new Date(b.merged_at) - new Date(a.merged_at));
 
   const reviewsPerPullRequest = await Promise.all(newlyMergedPullRequests.map(
-    pullRequest => loadGithubPullRequestReviews(GITHUB_REPOSITORY, pullRequest.number)
+    pullRequest => loadGithubPullRequestReviews(selectedRepository, pullRequest.number)
   ));
 
   return newlyMergedPullRequests.map((pullRequest, idx) => ({ pullRequest, reviews: reviewsPerPullRequest[idx] }));
