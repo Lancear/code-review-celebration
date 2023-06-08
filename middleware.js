@@ -3,6 +3,7 @@ export const config = {
 };
 
 const STATE_LENGTH = 3;
+const GITHUB_PAGE_SIZE = 32;
 
 /**
  * 
@@ -44,8 +45,40 @@ export default async function middleware(request, context) {
       headers.set('Set-Cookie', 'token=' + tokenInfo.access_token + '; SameSite=Strict; Path=/api; Secure; HttpOnly');
       return new Response(null, { headers, status: 302 });
     }
-    else if (url.pathname.startsWith("/api")) {
-      console.log(request.headers.get('cookie'));
+    else if (url.pathname === "/api/pulls") {
+      const token = /token=([^,;\s]+)/.exec(request.headers.get('cookie'))[1];
+      const repo = url.searchParams.get("repo");
+      const page = url.searchParams.get("page");
+
+      const res = await fetch(`https://api.github.com/repos/${repo}/pulls?state=closed&sort=updated&direction=desc&per_page=${GITHUB_PAGE_SIZE}&page=${page}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      return new Response(await res.arrayBuffer(), {
+        status: res.status,
+        statusText: res.statusText,
+        headers: res.headers,
+      });
+    }
+    else if (url.pathname === "/api/reviews") {
+      const token = /token=([^,;\s]+)/.exec(request.headers.get('cookie'))[1];
+      const repo = url.searchParams.get("repo");
+      const pr = url.searchParams.get("pr");
+      const page = url.searchParams.get("page");
+
+      const res = await fetch(`https://api.github.com/repos/${repo}/pulls/${pr}/reviews?sort=created&direction=desc&per_page=${GITHUB_PAGE_SIZE}&page=${page}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      return new Response(await res.arrayBuffer(), {
+        status: res.status,
+        statusText: res.statusText,
+        headers: res.headers,
+      });
     }
   }
   catch (err) {

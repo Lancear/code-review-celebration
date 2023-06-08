@@ -16,7 +16,7 @@ async function onPoll() {
   const firstChildBeforePoll = cardsContainer.firstElementChild;
 
   await paginated({ timeout: PAGE_INTERVAL }, async (page) => {
-    const pullRequests = await loadGithubPullRequests(GITHUB_REPOSITORY, GITHUB_TOKEN, page);
+    const pullRequests = await loadGithubPullRequests(GITHUB_REPOSITORY, page);
     const newPullRequests = pullRequests.filter(pullRequest => new Date(pullRequest.updated_at) > newestUpdateTimestamp);
     const newlyMergedPullRequests = await getMergedPullRequestsWithReviews(newPullRequests);
     updateLoadingState(newlyMergedPullRequests);
@@ -33,7 +33,7 @@ async function onPoll() {
 onPageLoad();
 async function onPageLoad() {
   await paginated({ timeout: PAGE_INTERVAL }, async (page) => {
-    const pullRequests = await loadGithubPullRequests(GITHUB_REPOSITORY, GITHUB_TOKEN, page);
+    const pullRequests = await loadGithubPullRequests(GITHUB_REPOSITORY, page);
     const mergedPullRequests = await getMergedPullRequestsWithReviews(pullRequests);
     updateLoadingState(mergedPullRequests);
 
@@ -91,7 +91,7 @@ async function getMergedPullRequestsWithReviews(newPullRequests) {
     .sort((a, b) => new Date(b.merged_at) - new Date(a.merged_at));
 
   const reviewsPerPullRequest = await Promise.all(newlyMergedPullRequests.map(
-    pullRequest => loadGithubPullRequestReviews(GITHUB_REPOSITORY, GITHUB_TOKEN, pullRequest.number)
+    pullRequest => loadGithubPullRequestReviews(GITHUB_REPOSITORY, pullRequest.number)
   ));
 
   return newlyMergedPullRequests.map((pullRequest, idx) => ({ pullRequest, reviews: reviewsPerPullRequest[idx] }));
