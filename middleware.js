@@ -33,13 +33,10 @@ export default async function middleware(request, context) {
       const validState = stateNumbers.length === STATE_LENGTH && await crypto.subtle.verify("hmac", await getSignKey(), stateSignature, stateNumbers);
       if (!validState) return new Response("Unauthorized", { status: 401 });
   
-      console.log("valid state");
       const { SCOPE } = process.env;
       const tokenInfo = await fetchAccessToken(url.searchParams.get('code'));
-      console.log(tokenInfo);
-      if (tokenInfo.scope === SCOPE) return new Response("Unauthorized", { status: 401 });
+      if (tokenInfo.scope !== SCOPE) return new Response("Unauthorized", { status: 401 });
 
-      console.log("set cookie");
       const headers = new Headers();
       url.pathname = '/';
       url.search = '';
