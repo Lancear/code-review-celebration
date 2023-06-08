@@ -26,16 +26,19 @@ export default async function middleware(request, context) {
     }
     else if (url.pathname === "/auth/authorize") {
       const stateParts = atob(url.searchParams.get('state')).split('.');
+      console.log(stateParts.length !== 2);
       if (stateParts.length !== 2) return new Response("Unauthorized", { status: 401 });
 
       const stateNumbers = new Uint8Array(stateParts[0].split('-').map(n => parseInt(n)));
       const stateSignature = new Uint8Array(stateParts[1].split('-').map(n => parseInt(n)));
 
       const validState = stateNumbers.length === STATE_LENGTH && await crypto.subtle.verify("hmac", await getSignKey(), stateSignature, stateNumbers);
+      console.log(validState);
       if (!validState) return new Response("Unauthorized", { status: 401 });
   
       const { SCOPE } = process.env;
       const tokenInfo = await fetchAccessToken(url.searchParams.get('code'));
+      console.log(tokenInfo.scope === SCOPE);
       if (tokenInfo.scope === SCOPE) return new Response("Unauthorized", { status: 401 });
 
       const headers = new Headers();
