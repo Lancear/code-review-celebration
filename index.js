@@ -5,10 +5,8 @@ const DEFAULT_GIF = 'https://i.pinimg.com/originals/b2/78/a5/b278a5a006340b89464
 
 const cardsContainer = document.querySelector('#cards');
 const loadingIndicator = document.querySelector('#loading-indicator');
-const celebrationGifCountDisplay = document.querySelector('#celebration-gif-count');
 
 // state
-let nrOfCelebrationGifs = 0;
 let newestUpdateTimestamp = null;
 
 // const pollIntervalId = setInterval(() => onPoll(), POLL_INTERVAL);
@@ -63,9 +61,11 @@ function updateLoadingState(newlyMergedPullRequests) {
 
 function createPullRequestCard(reviews, pullRequest) {
   const lastCelebrationGifReview = findLastCelebrationGifReview(reviews);
-  const celebrationGif = extractCelebrationGifUrl(lastCelebrationGifReview);
+  let celebrationGif = extractCelebrationGifUrl(lastCelebrationGifReview);
 
-  updateNrOfCelebrationGifs(celebrationGif);
+  if (celebrationGif?.startsWith(`https://github.com/${GITHUB_REPOSITORY}`)) {
+    celebrationGif = celebrationGif.replace(`https://github.com/${GITHUB_REPOSITORY}`, "") + "?repo=" + GITHUB_REPOSITORY;
+  }
 
   const card = Card(
     pullRequest.title,
@@ -76,13 +76,6 @@ function createPullRequestCard(reviews, pullRequest) {
     celebrationGif || DEFAULT_GIF
   );
   return card;
-}
-
-function updateNrOfCelebrationGifs(celebrationGif) {
-  if (celebrationGif) {
-    nrOfCelebrationGifs++;
-    celebrationGifCountDisplay.innerText = `${nrOfCelebrationGifs} pull requests celebrated with a gif!`;
-  }
 }
 
 async function getMergedPullRequestsWithReviews(newPullRequests) {
