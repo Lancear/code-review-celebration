@@ -65,7 +65,7 @@ export default async function middleware(request, context) {
       });
 
       const repoNames = res.ok 
-        ? JSON.stringify((await res.json()).map(repo => repo.full_name))
+        ? JSON.stringify((await res.json()).map(repo => repo.full_name).concat(['shopstory-ai/shopstory', 'shopstory-ai/pulse']))
         :  "";
 
       return new Response(repoNames, {
