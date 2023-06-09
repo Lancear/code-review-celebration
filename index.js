@@ -61,7 +61,7 @@ async function onPageLoad() {
     appendComponent(repositoryList, Repository(repo))
   }
 
-  document.github.repository.addEventListener('focusout', async () => {
+  document.github.repository.addEventListener('input', async () => {
     if (
       availableRepositories?.includes(document.github.repository.value) &&
         selectedRepository !== document.github.repository.value
