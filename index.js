@@ -104,6 +104,7 @@ async function onPageLoad() {
       selectedIsUser = null;
       selectedOrgImage.classList.add('hidden');
       document.github.repository.value = selectedRepository;
+      document.github.repository.style.width = "13ch";
     }
 
     if (
