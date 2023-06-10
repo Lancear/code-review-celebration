@@ -49,26 +49,57 @@ export default async function middleware(request, context) {
       const token = Boolean(/token=([^,;\s]+)/.exec(request.headers.get('cookie') ?? '')?.[1]);
       return token ? new Response('Ok', { status: 200 }) : new Response('Unauthorized', { status: 401 });
     }
-    else if (url.pathname === '/api/repos') {
+    else if (url.pathname === '/api/orgs') {
       const token = /token=([^,;\s]+)/.exec(request.headers.get('cookie') ?? '')?.[1];
 
-      const { repos_url } = await fetch('https://api.github.com/user', {
+      const user = await fetch('https://api.github.com/user', {
         headers: {
           'authorization': `Bearer ${token}`,
         },
       }).then(res => res.json());
 
-      const res = await fetch(`${repos_url}?sort=updated&per_page=100&page=1`, {
+      const res = await fetch(`${user.organizations_url}?per_page=100`, {
         headers: {
           'authorization': `Bearer ${token}`,
         },
       });
 
-      const repoNames = res.ok 
-        ? JSON.stringify((await res.json()).map(repo => repo.full_name).concat(['shopstory-ai/shopstory', 'shopstory-ai/pulse']))
+      const orgs = res.ok 
+        ? JSON.stringify([{ name: user.login, avatar_url: user.avatar_url, type: user.type }].concat((await res.json()).map(organization => ({ name: organization.login, avatar_url: organization.avatar_url, type: organization.type }))))
         :  "";
 
-      return new Response(repoNames, {
+      return new Response(orgs, {
+        status: res.status,
+        statusText: res.statusText,
+        headers: { 'content-type': 'application/json' },
+      });
+    }
+    else if (url.pathname === '/api/repos') {
+      const token = /token=([^,;\s]+)/.exec(request.headers.get('cookie') ?? '')?.[1];
+      const org = url.searchParams.get('org');
+      let reposUrl = `https://api.github.com/orgs/${org}/repos`;
+
+      if (!organization) {
+        const user = await fetch('https://api.github.com/user', {
+          headers: {
+            'authorization': `Bearer ${token}`,
+          },
+        }).then(res => res.json());
+
+        reposUrl = user.repos_url;
+      }
+
+      const res = await fetch(`${reposUrl}?sort=updated&per_page=100&page=1`, {
+        headers: {
+          'authorization': `Bearer ${token}`,
+        },
+      });
+
+      const repos = res.ok 
+        ? JSON.stringify((await res.json()).map(repo => ({ name: repo.name, full_name: repo.full_name })))
+        :  "";
+
+      return new Response(repos, {
         status: res.status,
         statusText: res.statusText,
         headers: { 'content-type': 'application/json' },

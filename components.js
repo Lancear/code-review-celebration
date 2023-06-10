@@ -3,9 +3,18 @@ const layers = ['z-0', 'z-10', 'z-20', 'z-30', 'z-40'];
 const scales = ['scale-105', 'scale-95', 'scale-100', 'scale-105'];
 const corners = ['rounded-ee-none', 'rounded-es-none', 'rounded-se-none', 'rounded-ss-none'];
 
-function Repository(name) {
+function Organization(org) {
   return (
-    `<option value="${name}">${name}</option>`
+    `<option value="${org.name}">
+      <img src="${org.avatar_url}" class="h-6 mr-1">
+      <span>${org.name}</span>
+    </option>`
+  );
+}
+
+function Repository(repo) {
+  return (
+    `<option value="${repo.full_name}">${repo.name}</option>`
   );
 }
 

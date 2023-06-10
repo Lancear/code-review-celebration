@@ -8,6 +8,7 @@ let loadingIndicator = document.querySelector('#loading-indicator');
 const footer = document.querySelector('#footer');
 const closeFooterButton = document.querySelector('#close-footer-button');
 const repositoryList = document.querySelector('#repository-list');
+const organizationList = document.querySelector('#organization-list');
 
 // state
 // let newestUpdateTimestamp = null;
@@ -51,19 +52,35 @@ async function onPageLoad() {
     else {
       selectedRepository = null;
     }
+
+    if  (!document.github.organization.value) {
+      document.github.organization.value = selectedRepository?.split("/");
+    }
+    else {
+      selectedRepository = null;
+    }
   }
 
   const res = await fetch('/api/check');
   if (!res.ok) location.pathname = '/auth/login';
 
-  availableRepositories = await loadGithubRepositories();
+  const organizations = await loadGithubOrganizations();
+  for (const org of organizations) {
+    appendComponent(organizationList, Organization(org))
+  }
+
+  if  (!document.github.organization.value) {
+    document.github.organization.value = organizations[0].name;
+  }
+
+  availableRepositories = await loadGithubRepositories(document.github.organization.value);
   for (const repo of availableRepositories) {
     appendComponent(repositoryList, Repository(repo))
   }
 
   document.github.repository.addEventListener('input', async () => {
     if (
-      availableRepositories?.includes(document.github.repository.value) &&
+      availableRepositories?.some(repo => repo.full_name === document.github.repository.value) &&
         selectedRepository !== document.github.repository.value
     ) {
       selectedRepository = document.github.repository.value;
