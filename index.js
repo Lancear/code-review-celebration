@@ -96,6 +96,14 @@ async function onPageLoad() {
   document.github.organization.addEventListener('input', async () => {
     document.github.organization.style.width = Math.max(document.github.organization.value?.length + 2, 6) + "ch";
 
+    if (!document.github.organization.value) {
+      selectedRepository = null;
+      selectedOrganization = null;
+      selectedIsUser = null;
+      selectedOrgImage.src = null;
+      document.github.repository.value = selectedRepository;
+    }
+
     if (
       availableOrganizations.some(org => org.name === document.github.organization.value) &&
         selectedOrganization !== document.github.organization.value
