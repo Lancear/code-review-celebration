@@ -63,8 +63,8 @@ async function onPageLoad() {
   }
   else {
     selectedRepository = null;
-    selectedOrganization = organizations[0].name;
-    selectedIsUser = organizations[0]?.type === "User";
+    selectedOrganization = availableOrganizations[0].name;
+    selectedIsUser = availableOrganizations[0]?.type === "User";
     document.github.repository.value = selectedRepository;
     document.github.organization.value = selectedOrganization;
   }
