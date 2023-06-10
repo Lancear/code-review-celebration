@@ -58,6 +58,7 @@ async function onPageLoad() {
     appendComponent(organizationList, Organization(org))
   }
 
+  selectedOrganization = urlRepository?.split('/')[0];
   if (urlRepository && availableOrganizations.some(org => org.name === selectedOrganization)) {
     selectedRepository = urlRepository;
     selectedOrganization = urlRepository?.split('/')[0];
@@ -82,6 +83,8 @@ async function onPageLoad() {
   }
 
   document.github.organization.addEventListener('input', async () => {
+    document.github.organization.style.width = Math.min(document.github.organization.value?.length, 16) + "ch";
+
     if (
       availableOrganizations.some(org => org.name === document.github.organization.value) &&
         selectedOrganization !== document.github.organization.value
@@ -117,6 +120,8 @@ async function onPageLoad() {
   });
 
   document.github.repository.addEventListener('input', async () => {
+    document.github.repository.style.width = Math.min(document.github.repository.value?.length, 16) + "ch";
+
     if (
       availableRepositories.some(repo => repo.full_name === `${selectedOrganization}/${document.github.repository.value}`) &&
         selectedRepository !== `${selectedOrganization}/${document.github.repository.value}`
