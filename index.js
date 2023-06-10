@@ -86,7 +86,7 @@ async function onPageLoad() {
   }
 
   document.github.organization.style.width = Math.max(document.github.organization.value?.length + 2, 6) + "ch";
-  document.github.repository.style.width = Math.max(document.github.repository.value?.length + 2, 6) + "ch";
+  document.github.repository.style.width = Math.max(document.github.repository.value?.length + 2, 12) + "ch";
 
   availableRepositories = await loadGithubRepositories(selectedIsUser ? undefined : selectedOrganization);
   for (const repo of availableRepositories) {
@@ -100,7 +100,7 @@ async function onPageLoad() {
       selectedRepository = null;
       selectedOrganization = null;
       selectedIsUser = null;
-      selectedOrgImage.src = null;
+      selectedOrgImage.src = undefined;
       document.github.repository.value = selectedRepository;
     }
 
@@ -139,7 +139,7 @@ async function onPageLoad() {
   });
 
   document.github.repository.addEventListener('input', async () => {
-    document.github.repository.style.width = Math.max(document.github.repository.value?.length + 2, 6) + "ch";
+    document.github.repository.style.width = Math.max(document.github.repository.value?.length + 2, 12) + "ch";
 
     if (
       availableRepositories.some(repo => repo.full_name === `${selectedOrganization}/${document.github.repository.value}`) &&
