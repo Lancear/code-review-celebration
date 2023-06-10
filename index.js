@@ -13,10 +13,11 @@ const selectedOrgImage = document.querySelector('#selected-org-image');
 
 // state
 // let newestUpdateTimestamp = null;
-let availableRepositories = [];
 let availableOrganizations = [];
-let selectedRepository = new URLSearchParams(window.location.search).get("repository");
-let selectedOrganization = selectedRepository?.split("/")[0];
+let availableRepositories = [];
+const urlRepository = new URLSearchParams(window.location.search).get("repository")?.split('/');
+let selectedOrganization = urlRepository?.[0];
+let selectedRepository = urlRepository?.[1];
 let selectedIsUser = null;
 
 // const pollIntervalId = setInterval(() => onPoll(), POLL_INTERVAL);
