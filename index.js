@@ -15,9 +15,9 @@ const selectedOrgImage = document.querySelector('#selected-org-image');
 // let newestUpdateTimestamp = null;
 let availableOrganizations = [];
 let availableRepositories = [];
-const urlRepository = new URLSearchParams(window.location.search).get("repository")?.split('/');
-let selectedOrganization = urlRepository?.[0];
-let selectedRepository = urlRepository?.[1];
+const urlRepository = new URLSearchParams(window.location.search).get("repository");
+let selectedOrganization = null;
+let selectedRepository = null;
 let selectedIsUser = null;
 
 // const pollIntervalId = setInterval(() => onPoll(), POLL_INTERVAL);
@@ -58,12 +58,14 @@ async function onPageLoad() {
     appendComponent(organizationList, Organization(org))
   }
 
-  if (selectedRepository && availableOrganizations.some(org => org.name === selectedOrganization)) {
-    document.github.repository.value = selectedRepository;
-    document.github.organization.value = selectedOrganization;
+  if (urlRepository && availableOrganizations.some(org => org.name === selectedOrganization)) {
+    selectedRepository = urlRepository;
+    selectedOrganization = urlRepository?.split('/')[0];
     const org = availableOrganizations.find(org => org.name === selectedOrganization)
     selectedIsUser = org?.type === "User";
     selectedOrgImage.src = org.avatar_url;
+    document.github.repository.value = selectedRepository.split('/')[1];
+    document.github.organization.value = selectedOrganization;
   }
   else {
     selectedRepository = null;
@@ -89,6 +91,7 @@ async function onPageLoad() {
       const org = availableOrganizations.find(org => org.name === selectedOrganization)
       selectedIsUser = org?.type === "User";
       selectedOrgImage.src = org.avatar_url;
+      document.github.repository.value = selectedRepository;
 
       window.history.replaceState(
         null, 
