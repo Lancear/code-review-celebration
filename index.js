@@ -22,10 +22,12 @@ const pollIntervalId = setInterval(() => onPoll(), POLL_INTERVAL);
 async function onPoll() {
   const pullRequests = await loadGithubPullRequests(selectedRepository, 1);
   const mergedPullRequests = getMergedPullRequests(pullRequests);
+  console.log("polling");
   
   const currentNewestPrIdx = mergedPullRequests.findIndex(pr => pr.number === newestMergedPr.number);
   if (currentNewestPrIdx === 0) return;
 
+  console.log("new data");
   const newlyMergedPrs = mergedPullRequests.slice(0, currentNewestPrIdx);
   newestMergedPr = mergedPullRequests[0];
   
