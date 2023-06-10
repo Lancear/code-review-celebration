@@ -1,4 +1,4 @@
-const POLL_INTERVAL = 1 * 60 * 1000;
+const POLL_INTERVAL = 30 * 1000;
 const DEFAULT_GIF = 'https://i.pinimg.com/originals/b2/78/a5/b278a5a006340b8946457552adec56c5.gif';
 const MAX_PULL_GIFS = 32;
 
@@ -20,11 +20,20 @@ let newestMergedPr = null;
 
 const pollIntervalId = setInterval(() => onPoll(), POLL_INTERVAL);
 async function onPoll() {
-  const pullRequests = await loadGithubPullRequests(selectedRepository, 1);
-  const mergedPullRequests = getMergedPullRequests(pullRequests);
+  let page = 1;
+  let pullRequests = await loadGithubPullRequests(selectedRepository, page++);
+  let mergedPullRequests = getMergedPullRequests(pullRequests);
   
-  const currentNewestPrIdx = mergedPullRequests.findIndex(pr => pr.number === newestMergedPr.number);
+  let currentNewestPrIdx = mergedPullRequests.findIndex(pr => pr.number === newestMergedPr.number);
   if (currentNewestPrIdx === 0) return;
+
+  while (currentNewestPrIdx === -1 && pullRequests.length < MAX_PULL_GIFS) {
+    pullRequests = pullRequests.concat(await loadGithubPullRequests(selectedRepository, page++));
+    mergedPullRequests = getMergedPullRequests(pullRequests);
+    currentNewestPrIdx = mergedPullRequests.findIndex(pr => pr.number === newestMergedPr.number);
+  }
+
+  if (currentNewestPrIdx === -1) currentNewestPrIdx = MAX_PULL_GIFS;
 
   const newlyMergedPrs = mergedPullRequests.slice(0, currentNewestPrIdx);
   newestMergedPr = mergedPullRequests[0];
@@ -178,7 +187,7 @@ async function onPageLoad() {
 }
 
 async function showPullRequests() {
-  const pullRequests = await loadGithubPullRequests(selectedRepository, 2);
+  const pullRequests = await loadGithubPullRequests(selectedRepository, 3);
   const mergedPullRequests = getMergedPullRequests(pullRequests);
   newestMergedPr = mergedPullRequests[0];
 
