@@ -18,11 +18,9 @@ let selectedRepository = null;
 let selectedIsUser = null;
 let newestMergedPr = null;
 let pollIntervalId = null;
-let lastPollTimestamp = null;
+let lastFetchTimestamp = null;
 
 async function onPoll() {
-  lastPollTimestamp = Date.now();
-
   let page = 1;
   let pullRequests = await loadGithubPullRequests(selectedRepository, page++);
   let mergedPullRequests = getMergedPullRequests(pullRequests);

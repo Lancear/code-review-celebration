@@ -13,6 +13,8 @@ function loadGithubRepositories(org) {
 }
 
 function loadGithubPullRequests(repo, page) {
+  lastFetchTimestamp = Date.now();
+
   return fetch(`/api/pulls?repo=${repo}&page=${page}`)
     .then(res => res.json());
 }
