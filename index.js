@@ -50,6 +50,14 @@ async function onPageLoad() {
     e.stopPropagation();
   });
 
+  document.github.organization.addEventListener('focus', () => {
+    document.github.organization.select();
+  });
+
+  document.github.repository.addEventListener('focus', () => {
+    document.github.repository.select();
+  });
+
   const res = await fetch('/api/check');
   if (!res.ok) location.pathname = '/auth/login';
 
@@ -83,7 +91,7 @@ async function onPageLoad() {
   }
 
   document.github.organization.addEventListener('input', async () => {
-    document.github.organization.style.width = Math.min(document.github.organization.value?.length, 16) + "ch";
+    document.github.organization.style.width = Math.max(document.github.organization.value?.length, 16) + "ch";
 
     if (
       availableOrganizations.some(org => org.name === document.github.organization.value) &&
@@ -120,7 +128,7 @@ async function onPageLoad() {
   });
 
   document.github.repository.addEventListener('input', async () => {
-    document.github.repository.style.width = Math.min(document.github.repository.value?.length, 16) + "ch";
+    document.github.repository.style.width = Math.max(document.github.repository.value?.length, 16) + "ch";
 
     if (
       availableRepositories.some(repo => repo.full_name === `${selectedOrganization}/${document.github.repository.value}`) &&
