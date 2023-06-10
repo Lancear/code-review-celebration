@@ -1,4 +1,4 @@
-const POLL_INTERVAL = 10 * 1000;
+const POLL_INTERVAL = 60 * 1000;
 const DEFAULT_GIF = 'https://i.pinimg.com/originals/b2/78/a5/b278a5a006340b8946457552adec56c5.gif';
 const MAX_PULL_GIFS = 32;
 
@@ -18,8 +18,11 @@ let selectedRepository = null;
 let selectedIsUser = null;
 let newestMergedPr = null;
 let pollIntervalId = null;
+let lastPollTimestamp = null;
 
 async function onPoll() {
+  lastPollTimestamp = Date.now();
+
   let page = 1;
   let pullRequests = await loadGithubPullRequests(selectedRepository, page++);
   let mergedPullRequests = getMergedPullRequests(pullRequests);
@@ -77,6 +80,10 @@ async function onPageLoad() {
     } 
     else if (selectedRepository && !pollIntervalId) {
       pollIntervalId = setInterval(() => onPoll(), POLL_INTERVAL);
+
+      if (lastPollTimestamp && lastPollTimestamp < Date.now() - POLL_INTERVAL) {
+        onPoll().catch(console.error);
+      }
     }
   });
 
