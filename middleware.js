@@ -65,7 +65,7 @@ export default async function middleware(request, context) {
       });
 
       const orgs = res.ok 
-        ? JSON.stringify([{ name: user.login, avatar_url: user.avatar_url, type: user.type }].concat((await res.json()).map(organization => ({ name: organization.login, avatar_url: organization.avatar_url, type: organization.type }))))
+        ? JSON.stringify([{ name: user.login, avatar_url: user.avatar_url, type: user.type }].concat((await res.json()).map(organization => ({ name: organization.login, avatar_url: organization.avatar_url }))))
         :  "";
 
       return new Response(orgs, {
@@ -79,7 +79,7 @@ export default async function middleware(request, context) {
       const org = url.searchParams.get('org');
       let reposUrl = `https://api.github.com/orgs/${org}/repos`;
 
-      if (!organization) {
+      if (!org) {
         const user = await fetch('https://api.github.com/user', {
           headers: {
             'authorization': `Bearer ${token}`,
