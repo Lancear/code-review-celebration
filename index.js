@@ -79,7 +79,7 @@ async function onPageLoad() {
     else if (selectedRepository && !pollIntervalId) {
       pollIntervalId = setInterval(() => onPoll(), POLL_INTERVAL);
 
-      if (lastPollTimestamp && lastPollTimestamp < Date.now() - POLL_INTERVAL) {
+      if (lastFetchTimestamp && lastFetchTimestamp < Date.now() - POLL_INTERVAL) {
         onPoll().catch(console.error);
       }
     }
