@@ -73,6 +73,7 @@ async function onPageLoad() {
     const org = availableOrganizations.find(org => org.name === selectedOrganization)
     selectedIsUser = org?.type === "User";
     selectedOrgImage.src = org.avatar_url;
+    selectedOrgImage.classList.remove('hidden');
     document.github.repository.value = selectedRepository.split('/')[1];
     document.github.organization.value = selectedOrganization;
   }
@@ -81,6 +82,7 @@ async function onPageLoad() {
     selectedOrganization = availableOrganizations[0].name;
     selectedIsUser = availableOrganizations[0]?.type === "User";
     selectedOrgImage.src = availableOrganizations[0]?.avatar_url;
+    selectedOrgImage.classList.remove('hidden');
     document.github.repository.value = selectedRepository;
     document.github.organization.value = selectedOrganization;
   }
@@ -96,11 +98,11 @@ async function onPageLoad() {
   document.github.organization.addEventListener('input', async () => {
     document.github.organization.style.width = Math.max(document.github.organization.value?.length + 2, 6) + "ch";
 
-    if (!document.github.organization.value) {
+    if (selectedOrganization && !document.github.organization.value) {
       selectedRepository = null;
       selectedOrganization = null;
       selectedIsUser = null;
-      delete selectedOrgImage.src;
+      selectedOrgImage.classList.add('hidden');
       document.github.repository.value = selectedRepository;
     }
 
@@ -113,6 +115,7 @@ async function onPageLoad() {
       const org = availableOrganizations.find(org => org.name === selectedOrganization)
       selectedIsUser = org?.type === "User";
       selectedOrgImage.src = org.avatar_url;
+      selectedOrgImage.classList.remove('hidden');
       document.github.repository.value = selectedRepository;
 
       window.history.replaceState(
