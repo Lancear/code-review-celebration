@@ -54,7 +54,7 @@ async function onPageLoad() {
     }
 
     if  (!document.github.organization.value) {
-      document.github.organization.value = selectedRepository?.split("/");
+      document.github.organization.value = selectedRepository?.split("/")[0];
     }
     else {
       selectedRepository = null;
