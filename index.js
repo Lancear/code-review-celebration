@@ -1,9 +1,8 @@
 const POLL_INTERVAL = 1 * 60 * 1000;
 const DEFAULT_GIF = 'https://i.pinimg.com/originals/b2/78/a5/b278a5a006340b8946457552adec56c5.gif';
-const MAX_GIFS = 32;
+const MAX_PULL_GIFS = 32;
 
 const cardsContainer = document.querySelector('#cards');
-let loadingIndicator = document.querySelector('#loading-indicator');
 const footer = document.querySelector('#footer');
 const closeFooterButton = document.querySelector('#close-footer-button');
 const repositoryList = document.querySelector('#repository-list');
@@ -38,7 +37,7 @@ async function onPoll() {
     insertComponentBefore(cardsContainer, firstChildBeforePoll, card);
   }
 
-  while (cardsContainer.children.length > MAX_GIFS) {
+  while (cardsContainer.children.length > MAX_PULL_GIFS) {
     cardsContainer.removeChild(cardsContainer.lastElementChild);
   }
 }
@@ -141,7 +140,6 @@ async function onPageLoad() {
         </div>
       `;
 
-      loadingIndicator = document.querySelector('#loading-indicator');
       repositoryList.innerHTML = '';
 
       availableRepositories = await loadGithubRepositories(selectedIsUser ? undefined : selectedOrganization);
@@ -172,7 +170,6 @@ async function onPageLoad() {
         </div>
       `;
 
-      loadingIndicator = document.querySelector('#loading-indicator');
       await showPullRequests();
     }
   });
@@ -206,9 +203,7 @@ async function showPullRequests() {
 }
 
 function updateLoadingState() {
-  if (!loadingIndicator.classList.contains('hidden')) {
-    loadingIndicator.classList.add('hidden');
-  }
+  cardsContainer.innerHTML = '';
 }
 
 function createPullRequestCard(reviews, pullRequest) {
