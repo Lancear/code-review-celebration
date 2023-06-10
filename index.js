@@ -100,7 +100,7 @@ async function onPageLoad() {
       selectedRepository = null;
       selectedOrganization = null;
       selectedIsUser = null;
-      selectedOrgImage.src = undefined;
+      delete selectedOrgImage.src;
       document.github.repository.value = selectedRepository;
     }
 
