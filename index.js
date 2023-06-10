@@ -32,7 +32,7 @@ async function onPoll() {
   const mergedPullRequestsWithReviews = await getMergedPullRequestsWithReviews(newlyMergedPrs);
   const firstChildBeforePoll = cardsContainer.firstElementChild;
 
-  for (const { pullRequest, reviews } of mergedPullRequestsWithReviews.reverse()) {
+  for (const { pullRequest, reviews } of mergedPullRequestsWithReviews) {
     const card = createPullRequestCard(reviews, pullRequest);
     insertComponentBefore(cardsContainer, firstChildBeforePoll, card);
   }
