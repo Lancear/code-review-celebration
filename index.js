@@ -23,7 +23,9 @@ async function onPoll() {
   const pullRequests = await loadGithubPullRequests(selectedRepository, 1);
   const mergedPullRequests = getMergedPullRequests(pullRequests);
   
-  const currentNewestPrIdx = mergedPullRequests.findIndex(pr => pr.number === newestMergedPr.number)
+  const currentNewestPrIdx = mergedPullRequests.findIndex(pr => pr.number === newestMergedPr.number);
+  if (currentNewestPrIdx === 0) return;
+
   const newlyMergedPrs = mergedPullRequests.slice(0, currentNewestPrIdx);
   newestMergedPr = mergedPullRequests[0];
   
