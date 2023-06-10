@@ -103,6 +103,12 @@ async function onPageLoad() {
       selectedIsUser = null;
       selectedOrgImage.classList.add('hidden');
       document.github.repository.value = selectedRepository;
+
+      window.history.replaceState(
+        null, 
+        document.title, 
+        document.location.href.split('?')[0]
+      );
     }
 
     if (
