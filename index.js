@@ -88,7 +88,7 @@ async function onPageLoad() {
   }
 
   document.github.organization.style.width = Math.max(document.github.organization.value?.length + 3, 7) + "ch";
-  document.github.repository.style.width = Math.max(document.github.repository.value?.length + 3, 13) + "ch";
+  document.github.repository.style.width = Math.max((document.github.repository.value?.length ?? 10) + 3, 7) + "ch";
 
   availableRepositories = await loadGithubRepositories(selectedIsUser ? undefined : selectedOrganization);
   for (const repo of availableRepositories) {
@@ -142,7 +142,7 @@ async function onPageLoad() {
   });
 
   document.github.repository.addEventListener('input', async () => {
-    document.github.repository.style.width = Math.max(document.github.repository.value?.length + 3, 13) + "ch";
+    document.github.repository.style.width = Math.max((document.github.repository.value?.length ?? 10) + 3, 7) + "ch";
 
     if (
       availableRepositories.some(repo => repo.full_name === `${selectedOrganization}/${document.github.repository.value}`) &&
