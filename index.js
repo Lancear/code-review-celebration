@@ -12,8 +12,11 @@ const organizationList = document.querySelector('#organization-list');
 
 // state
 // let newestUpdateTimestamp = null;
-let availableRepositories = null;
+let availableRepositories = [];
+let availableOrganizations = [];
 let selectedRepository = new URLSearchParams(window.location.search).get("repository");
+let selectedOrganization = selectedRepository?.split("/")[0];
+let selectedIsUser = null;
 
 // const pollIntervalId = setInterval(() => onPoll(), POLL_INTERVAL);
 // async function onPoll() {
@@ -45,42 +48,67 @@ async function onPageLoad() {
     e.stopPropagation();
   });
 
-  if (selectedRepository) {
-    if  (!document.github.repository.value) {
-      document.github.repository.value = selectedRepository;
-    }
-    else {
-      selectedRepository = null;
-    }
-
-    if  (!document.github.organization.value) {
-      document.github.organization.value = selectedRepository?.split("/")[0];
-    }
-    else {
-      selectedRepository = null;
-    }
-  }
-
   const res = await fetch('/api/check');
   if (!res.ok) location.pathname = '/auth/login';
 
-  const organizations = await loadGithubOrganizations();
-  for (const org of organizations) {
+  availableOrganizations = await loadGithubOrganizations();
+  for (const org of availableOrganizations) {
     appendComponent(organizationList, Organization(org))
   }
 
-  if  (!document.github.organization.value) {
-    document.github.organization.value = organizations[0].name;
+  if (selectedRepository && availableOrganizations.some(org => org.name === selectedOrganization)) {
+    document.github.repository.value = selectedRepository;
+    document.github.organization.value = selectedOrganization;
+    selectedIsUser = availableOrganizations.find(org => org.name === selectedOrganization)?.type === "User";
+  }
+  else {
+    selectedRepository = null;
+    selectedOrganization = organizations[0].name;
+    selectedIsUser = organizations[0]?.type === "User";
+    document.github.repository.value = selectedRepository;
+    document.github.organization.value = selectedOrganization;
   }
 
-  availableRepositories = await loadGithubRepositories(document.github.organization.value);
+  availableRepositories = await loadGithubRepositories(selectedIsUser ? undefined : selectedOrganization);
   for (const repo of availableRepositories) {
     appendComponent(repositoryList, Repository(repo))
   }
 
+  document.github.organization.addEventListener('input', async () => {
+    if (
+      availableOrganizations.some(org => org.name === document.github.organization.value) &&
+        selectedOrganization !== document.github.organization.value
+    ) {
+      selectedRepository = null;
+      selectedOrganization = document.github.organization.value;
+      selectedIsUser = availableOrganizations.find(org => org.name === selectedOrganization)?.type === "User";
+
+      window.history.replaceState(
+        null, 
+        document.title, 
+        document.location.href.split('?')[0]
+      );
+
+      cardsContainer.innerHTML = `
+        <div id="loading-indicator" class="p-4 bg-slate-200 rounded shadow-2xl border border-slate-300">
+          <figure class="w-96 rounded-sm bg-slate-800"><img class="h-full w-full" src="https://thumbs.gfycat.com/BrightConcernedHapuku-size_restricted.gif"/></figure>
+          <figcaption class="w-96 pt-2 break-words text-slate-600 leading-tight text-lg">Select a repository and WALL-E will load your pull requests :D</figcaption>
+        </div>
+      `;
+
+      loadingIndicator = document.querySelector('#loading-indicator');
+      repositoryList.innerHTML = '';
+
+      availableRepositories = await loadGithubRepositories(selectedIsUser ? undefined : selectedOrganization);
+      for (const repo of availableRepositories) {
+        appendComponent(repositoryList, Repository(repo))
+      }
+    }
+  });
+
   document.github.repository.addEventListener('input', async () => {
     if (
-      availableRepositories?.some(repo => repo.full_name === document.github.repository.value) &&
+      availableRepositories.some(repo => repo.full_name === document.github.repository.value) &&
         selectedRepository !== document.github.repository.value
     ) {
       selectedRepository = document.github.repository.value;
