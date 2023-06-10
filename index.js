@@ -1,5 +1,6 @@
 const POLL_INTERVAL = 1 * 60 * 1000;
 const DEFAULT_GIF = 'https://i.pinimg.com/originals/b2/78/a5/b278a5a006340b8946457552adec56c5.gif';
+const MAX_GIFS = 32;
 
 const cardsContainer = document.querySelector('#cards');
 let loadingIndicator = document.querySelector('#loading-indicator');
@@ -22,12 +23,10 @@ const pollIntervalId = setInterval(() => onPoll(), POLL_INTERVAL);
 async function onPoll() {
   const pullRequests = await loadGithubPullRequests(selectedRepository, 1);
   const mergedPullRequests = getMergedPullRequests(pullRequests);
-  console.log("polling");
   
   const currentNewestPrIdx = mergedPullRequests.findIndex(pr => pr.number === newestMergedPr.number);
   if (currentNewestPrIdx === 0) return;
 
-  console.log("new data");
   const newlyMergedPrs = mergedPullRequests.slice(0, currentNewestPrIdx);
   newestMergedPr = mergedPullRequests[0];
   
@@ -37,6 +36,10 @@ async function onPoll() {
   for (const { pullRequest, reviews } of mergedPullRequestsWithReviews) {
     const card = createPullRequestCard(reviews, pullRequest);
     insertComponentBefore(cardsContainer, firstChildBeforePoll, card);
+  }
+
+  while (cardsContainer.children.length > MAX_GIFS) {
+    cardsContainer.removeChild(cardsContainer.lastElementChild);
   }
 }
 
