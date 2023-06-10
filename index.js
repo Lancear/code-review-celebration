@@ -1,6 +1,4 @@
-const POLL_INTERVAL = 5 * 60 * 1000;
-const PAGE_INTERVAL = 10 * 1000;
-
+const POLL_INTERVAL = 1 * 60 * 1000;
 const DEFAULT_GIF = 'https://i.pinimg.com/originals/b2/78/a5/b278a5a006340b8946457552adec56c5.gif';
 
 const cardsContainer = document.querySelector('#cards');
@@ -12,32 +10,31 @@ const organizationList = document.querySelector('#organization-list');
 const selectedOrgImage = document.querySelector('#selected-org-image');
 
 // state
-// let newestUpdateTimestamp = null;
 let availableOrganizations = [];
 let availableRepositories = [];
 const urlRepository = new URLSearchParams(window.location.search).get("repository");
 let selectedOrganization = null;
 let selectedRepository = null;
 let selectedIsUser = null;
+let newestMergedPr = null;
 
-// const pollIntervalId = setInterval(() => onPoll(), POLL_INTERVAL);
-// async function onPoll() {
-//   const firstChildBeforePoll = cardsContainer.firstElementChild;
+const pollIntervalId = setInterval(() => onPoll(), POLL_INTERVAL);
+async function onPoll() {
+  const pullRequests = await loadGithubPullRequests(selectedRepository, 1);
+  const mergedPullRequests = getMergedPullRequests(pullRequests);
+  
+  const currentNewestPrIdx = mergedPullRequests.findIndex(pr => pr.number === newestMergedPr.number)
+  const newlyMergedPrs = mergedPullRequests.slice(0, currentNewestPrIdx);
+  newestMergedPr = mergedPullRequests[0];
+  
+  const mergedPullRequestsWithReviews = await getMergedPullRequestsWithReviews(newlyMergedPrs);
+  const firstChildBeforePoll = cardsContainer.firstElementChild;
 
-//   await paginated({ timeout: PAGE_INTERVAL }, async (page) => {
-//     const pullRequests = await loadGithubPullRequests(selectedRepository, page);
-//     const newPullRequests = pullRequests.filter(pullRequest => new Date(pullRequest.updated_at) > newestUpdateTimestamp);
-//     const newlyMergedPullRequests = await getMergedPullRequestsWithReviews(newPullRequests);
-//     updateLoadingState(newlyMergedPullRequests);
-
-//     for (const { pullRequest, reviews } of newlyMergedPullRequests) {
-//       const card = createPullRequestCard(reviews, pullRequest);
-//       insertComponentBefore(cardsContainer, firstChildBeforePoll, card);
-//     }
-
-//     return newPullRequests.length === GITHUB_PAGE_SIZE;
-//   });
-// }
+  for (const { pullRequest, reviews } of mergedPullRequestsWithReviews.reverse()) {
+    const card = createPullRequestCard(reviews, pullRequest);
+    insertComponentBefore(cardsContainer, firstChildBeforePoll, card);
+  }
+}
 
 onPageLoad();
 async function onPageLoad() {
@@ -171,39 +168,34 @@ async function onPageLoad() {
 }
 
 async function showPullRequests() {
-  const pullRequests = await loadGithubPullRequests(selectedRepository, 1);
+  const pullRequests = await loadGithubPullRequests(selectedRepository, 2);
+  const mergedPullRequests = getMergedPullRequests(pullRequests);
+  newestMergedPr = mergedPullRequests[0];
 
-  if (pullRequests.length === 0) {
+  if (mergedPullRequests.length === 0) {
     updateLoadingState();
     appendComponent(
       cardsContainer, 
       `<div class="p-4 bg-slate-200 rounded shadow-2xl border border-slate-300">
         <figure class="w-96 rounded-sm bg-slate-800"><img class="h-full w-full" src="https://media3.giphy.com/media/ncU3bkZ5ghDlS/giphy.gif"/></figure>
-        <figcaption class="w-96 pt-2 break-words text-slate-600 leading-tight text-lg">It seems like ${selectedRepository} does not have any pull requests yet 👀</figcaption>
+        <figcaption class="w-96 pt-2 break-words text-slate-600 leading-tight text-lg">It seems like ${selectedRepository} does not have any merged pull requests yet 👀</figcaption>
       </div>`
     );
     return;
   }
 
-  const mergedPullRequests = await getMergedPullRequestsWithReviews(pullRequests);
-  updateLoadingState(mergedPullRequests);
-
-  for (const { pullRequest, reviews } of mergedPullRequests) {
+  updateLoadingState();
+  const mergedPullRequestsWithReviews = await getMergedPullRequestsWithReviews(mergedPullRequests);
+  for (const { pullRequest, reviews } of mergedPullRequestsWithReviews) {
     const card = createPullRequestCard(reviews, pullRequest);
     appendComponent(cardsContainer, card);
   }
-
-  updateLoadingState();
 }
 
 function updateLoadingState() {
   if (!loadingIndicator.classList.contains('hidden')) {
     loadingIndicator.classList.add('hidden');
   }
-  // const newestUpdateOfPageTimestamp = new Date(newlyMergedPullRequests[0].pullRequest.updated_at);
-  // if (newestUpdateOfPageTimestamp > newestUpdateTimestamp) {
-  //   newestUpdateTimestamp = newestUpdateOfPageTimestamp;
-  // }
 }
 
 function createPullRequestCard(reviews, pullRequest) {
@@ -221,16 +213,18 @@ function createPullRequestCard(reviews, pullRequest) {
   return card;
 }
 
-async function getMergedPullRequestsWithReviews(newPullRequests) {
-  const newlyMergedPullRequests = newPullRequests
+function getMergedPullRequests(pullRequests) {
+  return pullRequests
     .filter(pullRequest => pullRequest.merged_at)
     .sort((a, b) => new Date(b.merged_at) - new Date(a.merged_at));
+}
 
-  const reviewsPerPullRequest = await Promise.all(newlyMergedPullRequests.map(
+async function getMergedPullRequestsWithReviews(mergedPullRequests) {
+  const reviewsPerPullRequest = await Promise.all(mergedPullRequests.map(
     pullRequest => loadGithubPullRequestReviews(selectedRepository, pullRequest.number)
   ));
 
-  return newlyMergedPullRequests.map((pullRequest, idx) => ({ pullRequest, reviews: reviewsPerPullRequest[idx] }));
+  return mergedPullRequests.map((pullRequest, idx) => ({ pullRequest, reviews: reviewsPerPullRequest[idx] }));
 }
 
 function getParticipatingUsers(pullRequest, lastCelebrationGifReview) {
