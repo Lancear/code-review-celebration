@@ -1,4 +1,4 @@
-const POLL_INTERVAL = 30 * 1000;
+const POLL_INTERVAL = 10 * 1000;
 const DEFAULT_GIF = 'https://i.pinimg.com/originals/b2/78/a5/b278a5a006340b8946457552adec56c5.gif';
 const MAX_PULL_GIFS = 32;
 
@@ -17,8 +17,8 @@ let selectedOrganization = null;
 let selectedRepository = null;
 let selectedIsUser = null;
 let newestMergedPr = null;
+let pollIntervalId = null;
 
-const pollIntervalId = setInterval(() => onPoll(), POLL_INTERVAL);
 async function onPoll() {
   let page = 1;
   let pullRequests = await loadGithubPullRequests(selectedRepository, page++);
@@ -70,6 +70,16 @@ async function onPageLoad() {
     document.github.repository.select();
   });
 
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden && pollIntervalId) {
+      clearInterval(pollIntervalId);
+      pollIntervalId = null;
+    } 
+    else if (selectedRepository && !pollIntervalId) {
+      pollIntervalId = setInterval(() => onPoll(), POLL_INTERVAL);
+    }
+  });
+
   const res = await fetch('/api/check');
   if (!res.ok) location.pathname = '/auth/login';
 
@@ -116,6 +126,8 @@ async function onPageLoad() {
       selectedIsUser = null;
       selectedOrgImage.classList.add('hidden');
       document.github.repository.value = selectedRepository;
+      if (pollIntervalId) clearInterval(pollIntervalId);
+      pollIntervalId = null;
 
       window.history.replaceState(
         null, 
@@ -187,7 +199,7 @@ async function onPageLoad() {
 }
 
 async function showPullRequests() {
-  const pullRequests = await loadGithubPullRequests(selectedRepository, 3);
+  const pullRequests = await loadGithubPullRequests(selectedRepository, 1);
   const mergedPullRequests = getMergedPullRequests(pullRequests);
   newestMergedPr = mergedPullRequests[0];
 
@@ -209,6 +221,9 @@ async function showPullRequests() {
     const card = createPullRequestCard(reviews, pullRequest);
     appendComponent(cardsContainer, card);
   }
+
+  if (pollIntervalId) clearInterval(pollIntervalId);
+  pollIntervalId = setInterval(() => onPoll(), POLL_INTERVAL);
 }
 
 function updateLoadingState() {
