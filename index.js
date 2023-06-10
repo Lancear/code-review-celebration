@@ -8,11 +8,11 @@ const closeFooterButton = document.querySelector('#close-footer-button');
 const repositoryList = document.querySelector('#repository-list');
 const organizationList = document.querySelector('#organization-list');
 const selectedOrgImage = document.querySelector('#selected-org-image');
+const urlRepository = new URLSearchParams(window.location.search).get("repository");
 
 // state
 let availableOrganizations = [];
 let availableRepositories = [];
-const urlRepository = new URLSearchParams(window.location.search).get("repository");
 let selectedOrganization = null;
 let selectedRepository = null;
 let selectedIsUser = null;
@@ -228,7 +228,10 @@ async function showPullRequests() {
   }
 
   if (pollIntervalId) clearInterval(pollIntervalId);
-  pollIntervalId = setInterval(() => onPoll(), POLL_INTERVAL);
+  
+  if (!document.hidden) {
+    pollIntervalId = setInterval(() => onPoll(), POLL_INTERVAL);
+  }
 }
 
 function updateLoadingState() {
