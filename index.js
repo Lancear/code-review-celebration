@@ -9,6 +9,7 @@ const footer = document.querySelector('#footer');
 const closeFooterButton = document.querySelector('#close-footer-button');
 const repositoryList = document.querySelector('#repository-list');
 const organizationList = document.querySelector('#organization-list');
+const selectedOrgImage = document.querySelector('#selected-org-image');
 
 // state
 // let newestUpdateTimestamp = null;
@@ -59,12 +60,15 @@ async function onPageLoad() {
   if (selectedRepository && availableOrganizations.some(org => org.name === selectedOrganization)) {
     document.github.repository.value = selectedRepository;
     document.github.organization.value = selectedOrganization;
-    selectedIsUser = availableOrganizations.find(org => org.name === selectedOrganization)?.type === "User";
+    const org = availableOrganizations.find(org => org.name === selectedOrganization)
+    selectedIsUser = org?.type === "User";
+    selectedOrgImage.src = org.avatar_url;
   }
   else {
     selectedRepository = null;
     selectedOrganization = availableOrganizations[0].name;
     selectedIsUser = availableOrganizations[0]?.type === "User";
+    selectedOrgImage.src = availableOrganizations[0]?.avatar_url;
     document.github.repository.value = selectedRepository;
     document.github.organization.value = selectedOrganization;
   }
@@ -81,7 +85,9 @@ async function onPageLoad() {
     ) {
       selectedRepository = null;
       selectedOrganization = document.github.organization.value;
-      selectedIsUser = availableOrganizations.find(org => org.name === selectedOrganization)?.type === "User";
+      const org = availableOrganizations.find(org => org.name === selectedOrganization)
+      selectedIsUser = org?.type === "User";
+      selectedOrgImage.src = org.avatar_url;
 
       window.history.replaceState(
         null, 
@@ -108,10 +114,10 @@ async function onPageLoad() {
 
   document.github.repository.addEventListener('input', async () => {
     if (
-      availableRepositories.some(repo => repo.full_name === document.github.repository.value) &&
-        selectedRepository !== document.github.repository.value
+      availableRepositories.some(repo => repo.full_name === `${selectedOrganization}/${document.github.repository.value}`) &&
+        selectedRepository !== `${selectedOrganization}/${document.github.repository.value}`
     ) {
-      selectedRepository = document.github.repository.value;
+      selectedRepository = `${selectedOrganization}/${document.github.repository.value}`;
       window.history.replaceState(
         null, 
         document.title, 

@@ -5,16 +5,13 @@ const corners = ['rounded-ee-none', 'rounded-es-none', 'rounded-se-none', 'round
 
 function Organization(org) {
   return (
-    `<option value="${org.name}">
-      <img src="${org.avatar_url}" class="h-6 mr-1">
-      <span>${org.name}</span>
-    </option>`
+    `<option value="${org.name}">${org.name}</option>`
   );
 }
 
 function Repository(repo) {
   return (
-    `<option value="${repo.full_name}">${repo.name}</option>`
+    `<option value="${repo.name}">${repo.name}</option>`
   );
 }
 
